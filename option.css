@@ -1,0 +1,552 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@700&display=swap');
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Source Sans Pro', sans-serif;
+    /* font-family: sans-serif; */
+}
+
+/* Dark Mode */
+
+:root {
+    --bg-color: rgb(28, 28, 28);
+    --shade-1: rgb(46, 46, 46);
+    --shade-2: rgb(59, 59, 59);
+    --shade-3: rgba(103, 103, 103, 0.997);
+    --shade-4: rgb(149, 149, 149);
+    --font-color1: rgb(221, 221, 221);
+    --search-icon-color: rgb(233, 255, 188);
+    --view-by-tab-color: rgb(221, 255, 190);
+    --view-by-window-color: rgb(255, 190, 190);
+  }
+
+  /* Light Mode */
+  /* :root {
+    --bg-color: rgb(240, 240, 240);
+    --shade-1: rgba(196, 196, 196, 0.922);
+    --shade-2: rgba(179, 179, 179, 0.866);
+    --shade-3: rgba(145, 145, 145, 0.848);
+    --shade-4: rgb(110, 110, 110);
+    --font-color1: rgb(52, 52, 52);
+    --search-icon-color: rgb(142, 142, 208);
+    --view-by-tab-color: rgb(141, 173, 111);
+    --view-by-window-color: rgb(170, 108, 108);
+  } */
+
+button i{
+    color: var(--font-color1);
+
+}
+
+
+body {
+    background-color: var(--bg-color);
+    color: var(--font-color1);
+    width: 350px;
+    cursor: default;
+    user-select: none;
+}
+
+/* Scroll Bar */
+body::-webkit-scrollbar {
+    width: 4px;
+    background-color: var(--shade-1);
+    scrollbar-gutter: stable;
+  }
+
+body::-webkit-scrollbar-thumb {
+    background-color: var(--shade-3);
+    border-radius: 1px;
+    }
+body::-webkit-scrollbar-thumb:hover{
+    background-color: var(--font-color1);
+}
+
+/* Search Container */
+.search-cnt{
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+    gap: 10px;
+    align-items: center;
+}
+.search-icon{
+    color: var(--search-icon-color);
+}
+.search-bar{
+   justify-self: center;
+   /* align-self: center; */
+}
+
+.search-bar input[type=text]{
+    caret-color: var(--font-color1);
+    width:100%;
+    height: 25px;
+    width: 250px;
+    border: none;
+    background-color: transparent;
+    color: var(--font-color1);
+}
+
+.search-bar input[type=text]:focus{
+    outline: none;
+}
+/* Tab Container */
+
+.tabs-cnt{
+    border-bottom: solid var(--shade-2) 1px;
+}
+
+.tabs-cnt.audio-video{
+    display: none;
+}
+.windows-heading {
+    font-size: 12px;
+    padding: 10px;
+    font-weight: bold;
+    position: -webkit-sticky;
+    position: sticky;
+    top: -1px;
+    z-index: 2;
+    background-color: var(--bg-color);
+    color: var(--shade-4);
+}
+
+
+
+
+.windows-heading,
+.windows-heading .title{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.windows-heading.audio-video{
+    justify-content: unset;
+    gap: 10px;
+}
+.windows-heading.audio-video .speaker-icon {
+    font-size: 22px;
+    font-variation-settings:
+    'FILL' 1,
+    'wght' 600,
+    'GRAD' 0,
+    'opsz' 48
+}
+
+.windows-heading .min-max-btn{
+    width: 25px;
+    margin-left: 5px;
+    aspect-ratio: 1;
+    border: 0;
+    background-color: transparent;
+    border-radius: 100%;
+}
+
+.windows-heading .min-max-btn i{
+    font-size: 20px;
+
+}
+
+.windows-heading .min-max-btn:hover{
+    background-color: var(--shade-2);
+}
+
+.audio-video-speaker-icon{
+
+}
+
+.windows-heading .sort-by{
+    width: auto;
+    padding: 2px 5px;
+    border: 0.25px solid var(--view-by-tab-color);
+    background-color: transparent;
+    color: var(--font-color1);
+}
+
+.windows-heading .sort-by:hover{
+    background-color: var(--shade-2);
+}
+
+.windows-heading .sort-by .sort-by-title{
+    font-size: 10px;
+    font-weight: 100;
+    padding: 0 5px;
+}
+
+.windows-heading .sort-by-option{
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--view-by-tab-color);
+    padding: auto 5px;
+}
+
+/* win collapse */
+
+.win-collapse{
+    display: grid;
+    height: auto;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    padding-bottom: 5px;
+    background-color: var(--bg-color);
+
+    /* border: solid 0.25px transparent; */
+}
+
+
+.win-collapse:hover{
+    background-color: var(--shade-1);
+    border-color: var(--shade-4);
+}
+
+.win-collapse.active {
+    background-color: var(--shade-2);
+}
+
+.win-collapse .win-col-tab-cnt{
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: auto;
+
+}
+
+
+.win-collapse .heading {
+    grid-column: 1 / end;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 550;
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+    position: -webkit-sticky;
+    position: sticky;
+    background-color: inherit;
+    top: 35px;
+    z-index: 1;
+}
+.win-collapse .heading .title{
+    margin-left: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.win-collapse .heading button{
+    width: 25px;
+    margin: 5px;
+    border-radius: 100%;
+    border: 0;
+    background-color: transparent;
+    opacity: 0;
+}
+
+.win-collapse .heading i {
+    font-size: 15px;
+    font-weight: 900;
+    padding: 5px;
+}
+
+.win-collapse:hover .heading button{
+    opacity: 1;
+}
+
+.win-collapse .heading button:hover{
+    background-color: var(--shade-3);
+}
+
+
+
+.win-collapse .win-col-tab{
+    justify-self: center;
+    align-self: center;
+    display: flex;
+    background-color: inherit;
+    justify-content: center;
+    align-items: center;
+    width: 35px;
+    aspect-ratio: 1;
+    margin: 2.5px;
+    border-radius: 10%;
+    padding: 2px;
+    border: 2px transparent solid;
+    position: relative;
+}
+
+.win-collapse .win-col-tab .audio-dot.active{
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 100%;
+    background-color: rgb(0, 255, 200);
+    left: 1px;
+    top: 1px;
+    opacity: 0;
+    animation: blink infinite 0.5s alternate;
+}
+
+@keyframes blink {
+    40% {opacity: 0;}
+    100% {
+        opacity: 1;
+    }
+    
+}
+
+.win-collapse .win-col-tab:hover,
+.win-collapse .win-col-tab.active{
+    background-color: var(--shade-3);
+    border: 2px solid var(--shade-3);
+
+}
+.win-collapse .win-col-tab img{
+    width: 20px;
+}
+
+
+/* colapsed-win */
+.win-expand {
+    opacity: 1;
+    background-color: var(--bg-color);
+    /* border: 1px solid transparent; */
+
+}
+
+/* colapsed-win heading */
+.win-expand .heading{
+    display: flex;
+    width: 100%;
+    position: -webkit-sticky;
+    position: sticky;
+    background-color: inherit;
+    top: 35px;
+    z-index: 1;
+}
+
+
+.win-expand .heading .stripe{
+    background-color: transparent;
+    width: 5px;
+    margin-right: 10px;
+}
+.win-expand .heading .desc{
+    flex-grow: 1;
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.win-expand .heading .desc .title{
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+    align-items: center;
+}
+
+.win-expand .heading .desc .title i{
+    font-size: 20px;
+    opacity: 0;
+}
+
+
+.win-expand .heading .desc .btn-cnt{
+    width: 15%;
+    display: flex;
+    justify-content: space-around;
+    opacity: 0;
+}
+.win-expand .heading .desc .btn-cnt i{
+    font-size: 20px;
+
+}   
+
+.win-expand:hover .heading .btn-cnt,
+.win-expand:hover .heading .desc .title i{
+    opacity: 1;
+}
+
+.win-expand .heading .desc button{
+    font-size: 14px;
+    aspect-ratio: 1;
+    margin: 5px 0;
+    height: 20px;
+    background-color: transparent;
+    border: 0;
+    border-radius: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.win-expand .heading .desc button:hover{
+    background-color: var(--shade-3);
+}
+
+.win-expand .heading .desc button i{
+    font-size: inherit;
+    cursor: pointer;
+}
+
+.win-expand .heading .desc .time{
+    font-weight: 600;
+}
+
+/* win-expand tab start */
+.win-expand .single-tab,
+.close .win-expand .single-tab:hover {
+    grid-template-columns: 10px 1fr 6.5fr 0.5fr;
+
+}
+
+.win-expand .single-tab:hover {
+    grid-template-columns: 10px 1fr 6fr 1fr;
+
+}
+
+.win-expand .single-tab .audio-dot.active{
+    left: 20px;
+}
+
+.win-expand .single-tab .stripe{
+    background-color: transparent;
+    width: 5px;
+}
+
+/* Single tab & win-expand*/
+.single-tab {
+    display: grid;
+    grid-template-columns: 1fr 6.5fr 0.5fr;
+    height: 55px; 
+    width: 100%;
+    position: relative;
+}
+
+.single-tab:hover {
+    padding-right: 0;
+    grid-template-columns: 1fr 6fr 1fr;
+    background-color: var(--shade-1);
+}
+
+.close .single-tab:hover {
+    grid-template-columns: 1fr 6.5fr 0.5fr;
+}
+
+.open .single-tab.active{
+    background-color: var(--shade-1);
+}
+
+.win-expand .single-tab.active{
+    background-color: var(--shade-2);
+}
+
+.single-tab .audio-dot{
+    display: none;
+}
+
+.single-tab .audio-dot.active{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 100%;
+    background-color: rgb(121, 198, 181);
+    left: 10px;
+    top: 17px;
+    opacity: 0;
+    animation: blink infinite 0.5s alternate;
+}
+
+
+
+.single-tab .fav-icon-cnt{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.single-tab .fav-icon{
+    width: 20px;
+    aspect-ratio: 1;
+}
+
+.single-tab .desc{
+    display: flex;
+    flex-direction: column;
+    overflow:hidden;
+    justify-content: center;
+    align-content: center; 
+    gap: 3px;
+}
+
+.single-tab .desc div{
+    width: 100%;
+    overflow:hidden; 
+    white-space:nowrap; 
+    text-overflow: ellipsis;
+    color: var(--font-color1);
+}
+
+.single-tab .desc .title{
+    font-weight: 550;
+    font-size: 13px;
+}
+
+.single-tab .desc .title-sub{
+    font-weight: 550;
+    font-size: 11.5px;
+    color: var(--shade-4);
+}
+
+.title-sub-time{
+    font-size: 13px;
+}
+
+
+.single-tab .close-btn{
+    display: none;
+} 
+
+
+.single-tab:hover .close-btn {
+    background-color: transparent;
+    border: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+}
+
+
+.single-tab .close-btn .close-icon-cnt{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 100%;
+    padding: 3px;
+}
+.single-tab .close-btn .close-icon-cnt i{
+    font-size: 20px;
+
+}
+
+.single-tab .close-btn .close-icon-cnt:hover{
+    background-color: var(--shade-3);
+}
+
+.no-tabs-msg-cnt{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    font-size: 14px;
+    color: var(--font-color1);
+    padding-bottom: 10px;
+}
+
+

@@ -1,0 +1,20 @@
+{
+    "name": "Chrome Tab Manager",
+    "description": "Tracks & Manages all Chrome Tabs",
+    "version": "1.0",
+    "manifest_version": 3,
+    "permissions": ["storage", "tabs", "scripting", "nativeMessaging"],
+    "background": {
+      "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "options_page": "popup.html",
+  "web_accessible_resources": [
+    {
+      "resources": ["/modules/*", "/icons/*"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
