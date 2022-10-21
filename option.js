@@ -222,7 +222,10 @@ const createCollapsedWindow = (window, time, isWindowActive)=>{
         }
         else{
             chrome.windows.create({}, (newWindow)=>{
-                window.map((tab)=> chrome.tabs.create({active: true, url: tab.url, windowId: newWindow.id}))
+                window.map((tab)=> chrome.tabs.create({active: true, 
+                    url: tab.url, 
+                    windowId: newWindow.id,
+                    state: 'fullscreen'}))
 
             })
         }

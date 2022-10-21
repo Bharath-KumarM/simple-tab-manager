@@ -127,10 +127,9 @@ const handleClosedWindow = (windowId) => {
     if (closedTabsOfClosedWin.length > 2){
         closedTabsOfClosedWin = closedTabsOfClosedWin.slice(1)
     }
-    updateLocalStorage({closedTabsOfClosedWin, closedTabsOfOpenWin})
-
-
+    
     delete closedTabsOfOpenWin[windowId]
+    updateLocalStorage({closedTabsOfClosedWin, closedTabsOfOpenWin})
 
 }
 
