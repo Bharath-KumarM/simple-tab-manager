@@ -144,8 +144,26 @@ const createSingleTabEle = (tab) =>{
 
     // Audio Idicator
     if (tab.audible){
+        console.log(tab)
         const audioDotEle = singleTabEle.querySelector('.audio-dot')
         audioDotEle.classList.add('active')
+        const speakerBtnEle = document.createElement('span')
+        speakerBtnEle.classList.add('material-symbols-outlined')
+        speakerBtnEle.classList.add('speaker-btn')
+        if (tab.mutedInfo.muted) speakerBtnEle.textContent = 'volume_off'
+        else speakerBtnEle.textContent = 'volume_up'
+        speakerBtnEle.addEventListener('click', (e)=>{
+            e.stopPropagation()
+            //Swap 
+            chrome.tabs.get(tab.id,(newTab)=>{
+                const isMuted = !newTab.mutedInfo.muted
+                if (isMuted) speakerBtnEle.textContent = 'volume_off'
+                else speakerBtnEle.textContent = 'volume_up'
+                chrome.tabs.update(newTab.id, {muted: isMuted})
+            })
+            
+        })
+        titleEle.prepend(speakerBtnEle)
     }
 
 
@@ -845,5 +863,5 @@ const createMsgBanner = (heading1Msg, heading2Msg)=>{
     }
     document.getElementsByTagName('body')[0].prepend(msgBannerCntEle)
 }
-createMsgBanner()
+// createMsgBanner()
 
