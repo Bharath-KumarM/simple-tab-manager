@@ -11,6 +11,12 @@
     "default_popup": "popup.html"
   },
   "options_page": "popup.html",
+  "icons": {
+    "16": "./icons/arrow-down.png",
+    "32": "./icons/arrow-down.png",
+    "48": "./icons/arrow-down.png",
+    "128": "./icons/arrow-down.png"
+  },
   "web_accessible_resources": [
     {
       "resources": ["/modules/*", "/icons/*"],

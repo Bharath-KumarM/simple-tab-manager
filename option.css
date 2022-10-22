@@ -63,7 +63,80 @@ body::-webkit-scrollbar-thumb {
 body::-webkit-scrollbar-thumb:hover{
     background-color: var(--font-color1);
 }
+/* Message Banner */
+.msg-banner-cnt{
+    position: -webkit-sticky;
+    position: sticky;
+    top: -55px;
+    z-index: 3;
+    margin: 3px;
+    background-color: var(--shade-1);
+    border: solid var(--shade-2) 0.5px;
+    border-radius: 5px 5px;
+    border-top: solid gold 7px;
+    
+    display: flex;
+    /* display: none; */
+    flex-direction: column;
+    justify-items: center;
+    align-items: center;
+}
+.msg-banner-icon-cnt{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 45px;
+    color: gold;
+    position: relative;
+}
+.msg-banner-icon{
+    display: flex;
+    justify-content: center;
 
+    
+}
+
+.msg-banner-close-btn{
+    border-radius: 100%;
+    width: 28px;
+    aspect-ratio: 1;
+    right: 5px;
+    top: 5px;
+    position: absolute;
+    background-color: transparent;
+    color: var(--font-color1);
+    border: 0;
+}
+
+.msg-banner-close-btn:hover{
+    background-color: var(--shade-3);
+}
+
+.msg-banner-message{
+    width: 80%;
+    margin: 10px 0;
+    color: var(--font-color1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 5px;
+}
+.msg-banner-message .heading-1{
+    font-size: 16px;
+    align-self: flex-start;
+    
+}
+.msg-banner-message .heading-2{
+    align-self: flex-start;
+    font-size: 13px;
+    
+}
+.msg-banner-message .heading-2 a{
+    color: gold;
+
+}
 /* Search Container */
 .search-cnt{
     display: flex;
