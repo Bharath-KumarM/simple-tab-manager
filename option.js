@@ -142,23 +142,37 @@ const createSingleTabEle = (tab) =>{
     timeEle.textContent = ' ' + getAgoTime(tab.time)
 
 
-    // Audio Idicator
+    
     if (tab.audible){
-        console.log(tab)
+        // Audio Idicator
         const audioDotEle = singleTabEle.querySelector('.audio-dot')
         audioDotEle.classList.add('active')
+        //Speaket Btn
         const speakerBtnEle = document.createElement('span')
         speakerBtnEle.classList.add('material-symbols-outlined')
         speakerBtnEle.classList.add('speaker-btn')
-        if (tab.mutedInfo.muted) speakerBtnEle.textContent = 'volume_off'
-        else speakerBtnEle.textContent = 'volume_up'
+        if (tab.mutedInfo.muted) {
+            speakerBtnEle.textContent = 'volume_off'
+            speakerBtnEle.classList.add('mute')
+        }
+        else {
+            speakerBtnEle.textContent = 'volume_up'
+            speakerBtnEle.classList.remove('mute')
+        }
+        //Speaker Btn Click event
         speakerBtnEle.addEventListener('click', (e)=>{
             e.stopPropagation()
             //Swap 
             chrome.tabs.get(tab.id,(newTab)=>{
                 const isMuted = !newTab.mutedInfo.muted
-                if (isMuted) speakerBtnEle.textContent = 'volume_off'
-                else speakerBtnEle.textContent = 'volume_up'
+                if (isMuted) {
+                    speakerBtnEle.textContent = 'volume_off'
+                    speakerBtnEle.classList.add('mute')
+                } 
+                else{
+                    speakerBtnEle.textContent = 'volume_up'
+                    speakerBtnEle.classList.remove('mute') 
+                }
                 chrome.tabs.update(newTab.id, {muted: isMuted})
             })
             
