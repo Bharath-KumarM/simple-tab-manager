@@ -21,8 +21,6 @@ export const processOpenTabs = async () =>{
 
     modifyMinMaxSortBtns(openTabCntEle, openTabsViewMode)
 
-    console.log(openTabsStored, openTabsViewMode)
-
     //Get Tab & Window Details from chrome Browser API
     const currTabs = await chrome.tabs.query({})
     const currWindow = await chrome.windows.getCurrent({})

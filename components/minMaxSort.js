@@ -5,7 +5,6 @@ import { processOpenTabs } from "./processOpenTabs.js"
 const openTabCntEle =  document.getElementsByClassName('open tabs-cnt')[0]
 const closeTabCntEle =  document.getElementsByClassName('close tabs-cnt')[0]
 
-console.log('minMax Script')
 export const handleMinMaxBtnClick = (tabCntEle, viewMode)=> {
     // icon change
     const minMaxIconEle = tabCntEle.querySelector('.min-max-btn .material-symbols-outlined')

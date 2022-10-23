@@ -11,22 +11,13 @@ import "./components/countUserOpen.js" //counts user open and put banner message
 // E Expand Window View
 chrome.storage.local.set({'openTabsViewMode': 'T'},()=>{
     processOpenTabs()
-    // Search bar
-    const searchBarInputEle = document.querySelector('.search-bar input')
-    searchBarInputEle.focus()
-    searchBarInputEle.addEventListener('input', (e) => {
-        onSearchBarInputChange(e)
-    })
 })
 
 processClosedTabs()
 
-
-
-
-
-
-
-
-
-
+// Search bar
+const searchBarInputEle = document.querySelector('.search-bar input')
+searchBarInputEle.focus()
+searchBarInputEle.addEventListener('input', (e) => {
+    onSearchBarInputChange(e)
+})

@@ -1,4 +1,5 @@
 import { getAgoTime, getRandomColor, getUrlDomin } from "./utilities.js"
+import { createCollapsedWindow } from "./collapsedWindow.js"
 //Template
 const winExpandTemplateEle = document.getElementById('win-expand')
 
