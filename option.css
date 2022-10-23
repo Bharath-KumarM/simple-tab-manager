@@ -18,6 +18,7 @@
     --shade-4: rgb(149, 149, 149);
     --font-color1: rgb(221, 221, 221);
     --view-by-tab-color: rgb(221, 255, 190);
+    --view-by-tab-color: rgb(0, 217, 255);
     --view-by-window-color: rgb(237, 132, 132);
     --accent-color: rgb(0, 217, 255);
   }
@@ -47,6 +48,8 @@ body {
     width: 350px;
     cursor: default;
     user-select: none;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Scroll Bar */
