@@ -6,6 +6,10 @@ const openTabCntEle =  document.getElementsByClassName('open tabs-cnt')[0]
 const closeTabCntEle =  document.getElementsByClassName('close tabs-cnt')[0]
 
 export const handleMinMaxBtnClick = (tabCntEle, viewMode)=> {
+    // Min Max Btn
+    const minMaxBtnEle = tabCntEle.querySelector('.min-max-btn')
+    if (viewMode === 'C') minMaxBtnEle.title = 'Expand Windows' 
+    else minMaxBtnEle.title = 'Collapse Windows'
     // icon change
     const minMaxIconEle = tabCntEle.querySelector('.min-max-btn .material-symbols-outlined')
     if (['T', 'E'].includes(viewMode)) minMaxIconEle.textContent = 'arrow_drop_up'
