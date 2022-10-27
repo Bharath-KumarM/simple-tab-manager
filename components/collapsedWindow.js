@@ -1,5 +1,7 @@
 import { getAgoTime, getUrlDomin, getRandomColor } from "./utilities.js"
 import { createExapndWindow } from "./expandWindow.js"
+import { replaceClosedWindow } from "./processClosedTabs.js"
+import { replaceOpenWindow } from "./processOpenTabs.js"
 
 const winCollapseTemplateEle = document.getElementById('win-collapse')
 const tabCollapsedTemplateEle =  winCollapseTemplateEle.content.cloneNode(true).querySelector('.win-col-tab')
@@ -123,14 +125,23 @@ export const createCollapsedWindow = (window, time, isWindowActive)=>{
 
     // Expand btn to expand collapsed window
     const toExpandBtnEle = winCollapseEle.querySelector('.expand-btn')
-    toExpandBtnEle.addEventListener('click', (e)=>{
+    toExpandBtnEle.addEventListener('click', async (e)=>{
         e.stopPropagation()
-        const time = window[0].time
-        // Newly created expanded window
-        const exapndWinEle = createExapndWindow(window, time, isWindowActive)
-        winCollapseEle.parentElement.insertBefore(exapndWinEle, winCollapseEle)
-        winCollapseEle.remove()
-        })
+        if (isOpenTabs){
+            replaceOpenWindow(windowId, isWindowActive, winCollapseEle, 'E')
+        }
+        else if (isOpenWindow){
+            replaceClosedWindow(windowId, isWindowActive, winCollapseEle, 'E')
+
+        }
+        else{
+            const time = window[0].time
+            // Newly created expanded window
+            const exapndWinEle = createExapndWindow(window, time, isWindowActive)
+            winCollapseEle.parentElement.insertBefore(exapndWinEle, winCollapseEle)
+            winCollapseEle.remove()
+        }
+    })
     return winCollapseEle
 }
 

@@ -647,4 +647,10 @@ body::-webkit-scrollbar-thumb:hover{
     padding-bottom: 10px;
 }
 
-
+/* drag and drop single tab */
+.single-tab.dragging  {
+    border: 2px dashed white;
+}
+.single-tab.dragging div{
+    opacity: 0.7;
+}

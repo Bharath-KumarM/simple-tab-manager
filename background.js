@@ -3,8 +3,16 @@ console.log('Background is running!')
 const createTabObj = (tab, doUpdateTime) => { //Get required property
     let time 
     const date = new Date()
-    if (!doUpdateTime) time = openTabsStored[tab.id].time
-    else time = date.getTime()
+    if (!doUpdateTime) {
+        //if the tab is not stored get the current time
+        if (!openTabsStored[tab.id] || !openTabsStored[tab.id].time){
+            openTabsStored[tab.id] = createTabObj(tab, true)
+        }
+        time = openTabsStored[tab.id].time
+    }
+    else {
+        time = date.getTime()
+    }
     return {id: tab.id, windowId: tab.windowId, time, 
         favIconUrl: tab.favIconUrl, url: tab.url, title: tab.title}
 }
@@ -168,6 +176,10 @@ getAllLocalStorage().then(()=>{
         }
     })
     chrome.tabs.onActivated.addListener(activeInfo=>{
+        if (!openTabsStored[activeInfo.tabId]){
+            console.log('Recently active tab is not found in openTabStorage')
+            return
+        }
         const tab =  openTabsStored[activeInfo.tabId]
         openTabsStored[activeInfo.tabId] = createTabObj(tab, true)
         updateLocalStorage({openTabsStored})
@@ -187,7 +199,3 @@ getAllLocalStorage().then(()=>{
     chrome.tabs.onRemoved.addListener(handleClosedTab)
     chrome.windows.onRemoved.addListener(handleClosedWindow)
 })
-
-
-
-

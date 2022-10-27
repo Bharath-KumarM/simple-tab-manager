@@ -1,5 +1,7 @@
 import { getAgoTime, getRandomColor, getUrlDomin } from "./utilities.js"
 import { createCollapsedWindow } from "./collapsedWindow.js"
+import { replaceClosedWindow } from "./processClosedTabs.js"
+import { replaceOpenWindow } from "./processOpenTabs.js"
 //Template
 const winExpandTemplateEle = document.getElementById('win-expand')
 
@@ -8,7 +10,8 @@ const winExpandTemplateEle = document.getElementById('win-expand')
 export const createExapndWindow = (window, time, isWindowActive)=>{
 
     // Decode Window Id and it is opened or closed
-    const isOpenWindow =  window[0].windowId ? true : false
+    const windowId = window[0].windowId
+    const isOpenWindow =  windowId ? true : false
     const isOpenTabs =  window[0].id  ? true : false
 
     //Expand window element
@@ -109,14 +112,71 @@ export const createExapndWindow = (window, time, isWindowActive)=>{
             closeTabBtnEle.remove()
         }
 
+        // Add tabId and windowId data to elements
+        singleTabEle.dataset.tabId = tab.id
+        singleTabEle.dataset.windowId = tab.windowId
+        singleTabEle.draggable = true
+        if (isOpenTabs){
+            singleTabEle.addEventListener('dragstart', (e)=>{
+                singleTabEle.classList.add('dragging')
+                e.preventDefault()
+                })
+            singleTabEle.addEventListener('dragend', (e)=>{
+                document.querySelector('.dragging').classList.remove('dragging')
+            }) 
+        }
+    
+
     })
+    const getCardAfterDraggingCard = (windowEle, yDraggingTab)=>{
+
+        let windowTabs = [...windowEle.querySelectorAll('.single-tab:not(.dragging)')];
+    
+        return windowTabs.reduce((closestTab, nextTab)=>{
+            let nextTabRect = nextTab.getBoundingClientRect();
+            let offset = yDraggingTab - nextTabRect.top - nextTabRect.height /2;
+    
+            if(offset < 0 && offset > closestTab.offset){
+                return {offset, element: nextTab}
+            } else{
+                return closestTab;
+            }
+        
+        }, {offset: Number.NEGATIVE_INFINITY}).element;
+    
+    }
+    if (isOpenTabs){
+        winExpandEle.addEventListener('dragover', (e)=>{
+            e.preventDefault()
+            let draggingTab = document.querySelector('.dragging');
+            let tabAfterDraggingTab = getCardAfterDraggingCard(winExpandEle, e.clientY);
+            if(tabAfterDraggingTab){
+                    tabAfterDraggingTab.parentNode.insertBefore(draggingTab, tabAfterDraggingTab);
+                    console.log('insert before')
+
+            } else{
+                console.log('append child')
+                winExpandEle.appendChild(draggingTab);
+            }
+    
+        })
+    }
 
     const toMinimizeBtn = winExpandEle.querySelector('.minimize')
-    toMinimizeBtn.addEventListener('click', (e)=>{
+    toMinimizeBtn.addEventListener('click', async (e)=>{
         e.stopPropagation()
-        const exapndWinEle = createCollapsedWindow(window, time, isWindowActive)
-        winExpandEle.parentElement.insertBefore(exapndWinEle, winExpandEle)
-        winExpandEle.remove()
+        if(isOpenTabs){
+            replaceOpenWindow(windowId, isWindowActive, winExpandEle, 'C')
+        }
+        else if (isOpenWindow){
+            replaceClosedWindow(windowId, isWindowActive,winExpandEle, 'C' )
+        }
+        else{
+
+            const exapndWinEle = createCollapsedWindow(window, time, isWindowActive)
+            winExpandEle.parentElement.insertBefore(exapndWinEle, winExpandEle)
+            winExpandEle.remove()
+        }
     })
 
     return winExpandEle

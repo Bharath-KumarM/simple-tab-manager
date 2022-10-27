@@ -9,7 +9,7 @@ chrome.storage.local.get('userOpenCount', (value)=>{
     else{
         const userOpenCount = value.userOpenCount +  1
         chrome.storage.local.set({userOpenCount})
-        if (userOpenCount%3 === 0){
+        if (userOpenCount%100 === 0){
             createMsgBanner()
         }
     }

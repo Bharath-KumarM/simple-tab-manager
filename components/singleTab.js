@@ -1,5 +1,6 @@
 import { getAgoTime, getUrlDomin} from "./utilities.js"
 import { createCollapsedTabEle } from "./collapsedWindow.js"
+import { processOpenTabs } from "./processOpenTabs.js"
 
 //Template
 const closeTabCntEle =  document.getElementsByClassName('close tabs-cnt')[0]
@@ -8,11 +9,9 @@ const singleTabTemplateEle = document.getElementById('single-tab')
 const createNewCloseTabEle = (tab)=>{
     // closed window element 
     const closedWindowEle = closeTabCntEle.querySelector(`[data-window-id="${tab.windowId}"]`)
-    if (closedWindowEle){
-        if (closedWindowEle.dataset.windowType === 'collapsed'){
-            const closedWindowTabCnt = closedWindowEle.querySelector('.win-col-tab-cnt')
-            createCollapsedTabEle(tab, closedWindowTabCnt)
-        }
+    if (closedWindowEle && closedWindowEle.dataset.windowType === 'collapsed'){
+        const closedWindowTabCnt = closedWindowEle.querySelector('.win-col-tab-cnt')
+        createCollapsedTabEle(tab, closedWindowTabCnt)
     }
     else{
         const closeTabsInnerCnt = closeTabCntEle.querySelector('.tabs-inner-cnt')
@@ -120,5 +119,40 @@ export const createSingleTabEle = (tab) =>{
             createNewCloseTabEle(tab)
         })
     }
+    // Add tabId and windowId data to elements
+    singleTabEle.dataset.tabId = tab.id
+    singleTabEle.dataset.windowId = tab.windowId
+    singleTabEle.draggable = true
+
+    if (isOpenTab){
+        singleTabEle.addEventListener('dragstart', (e)=>{
+            singleTabEle.classList.add('dragging')
+            let openTabsViewMode = 'E'
+            chrome.storage.local.set({openTabsViewMode})
+            processOpenTabs().then(()=>{
+                const draggingEle = document.querySelector(`[data-tab-id="${tab.id}"]`)
+                //Scroll for element location
+                draggingEle.classList.add('dragging')
+                const offset = 150
+                const bodyRect = document.body.getBoundingClientRect().top
+                const elementRect = draggingEle.parentNode.getBoundingClientRect().top
+                const elementPosition = elementRect - bodyRect;
+                const offsetPosition = elementPosition - offset
+
+                window.scrollTo({
+                top: offsetPosition,
+                behavior: 'smooth'
+                })
+                // draggingEle.addEventListener('dragend', e=>{
+                //     draggingEle.classList.remove('dragging')
+                // })
+            })
+        }) 
+        singleTabEle.addEventListener('dragend', (e)=>{
+            document.querySelector('.dragging').classList.remove('dragging')
+            // singleTabEle.classList.remove('dragging')
+        }) 
+    }
+
     return singleTabEle
 }

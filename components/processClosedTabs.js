@@ -135,3 +135,16 @@ export const processClosedTabs = async () =>{
         }
     }
 }
+
+export const replaceClosedWindow = async (windowId, isWindowActive, replaceEle, replaceByEleViewMode )=>{
+    let closedTabsOfOpenWin = await chrome.storage.local.get('CTofOW')
+    closedTabsOfOpenWin = closedTabsOfOpenWin.CTofOW
+    const updatedWindow = closedTabsOfOpenWin[windowId].reverse()
+    let time = updatedWindow[0].time
+    // Newly created expanded window
+    const replaceByEle = replaceByEleViewMode === 'E' ? 
+            createExapndWindow(updatedWindow, time, isWindowActive) :
+            createCollapsedWindow(updatedWindow, time, isWindowActive)
+    replaceEle.parentElement.insertBefore(replaceByEle, replaceEle)
+    replaceEle.remove()
+}

@@ -1,5 +1,5 @@
-import { createAllExpandWindows } from "./expandWindow.js"
-import { createAllCollapsedWindows } from "./collapsedWindow.js"
+import { createAllExpandWindows, createExapndWindow } from "./expandWindow.js"
+import { createAllCollapsedWindows, createCollapsedWindow } from "./collapsedWindow.js"
 import { createSingleTabEle } from "./singleTab.js"
 import { handleMinMaxBtnClick as modifyMinMaxSortBtns } from "./minMaxSort.js"
 
@@ -19,25 +19,28 @@ export const processOpenTabs = async () =>{
     value = await chrome.storage.local.get('openTabsViewMode')
     let openTabsViewMode = value.openTabsViewMode
 
+    // Minimixe Maximize and Sort button Style
     modifyMinMaxSortBtns(openTabCntEle, openTabsViewMode)
 
     //Get Tab & Window Details from chrome Browser API
-    const currTabs = await chrome.tabs.query({})
+    let currTabs = await chrome.tabs.query({})
     const currWindow = await chrome.windows.getCurrent({})
     const activeWindowId = currWindow.id
 
 
     // Add time property to currTabs
-    const sortedAllTabs = currTabs.map((tab)=> {
+    currTabs = currTabs.map((tab)=> {
         if (!openTabsStored[tab.id]) {
-            console.log('Problem in BG Script - curr Tab missing in storedOpenTab')
+            console.log('Problem - curr Tab missing in storedOpenTabs', tab)
+            const date = new Date()
+            tab.time = date.getTime()
         }
         else tab.time = openTabsStored[tab.id].time
         return tab
     })
 
-
     // sort currTabs based on time
+    const sortedAllTabs = currTabs.map(tab => tab)
     sortedAllTabs.sort((a,b)=>  b.time - a.time)
 
     // Audio & Video Tabs
@@ -51,8 +54,6 @@ export const processOpenTabs = async () =>{
     }
 
 
-
-    // Create View By Table
     if (openTabsViewMode === 'T'){
         // Filter tabs
         const filteredAllTabs = sortedAllTabs.filter((tab, index)=> {
@@ -140,4 +141,34 @@ const createaudioVideoTabs = (allTabs) =>{
         singleTabCntEle.appendChild(singleTabEle)
     }
     return singleTabCntEle
+}
+
+const getOpenWindow = async (windowId)=>{
+    let value =  await chrome.storage.local.get('openTabs')
+    let openTabsStored = value.openTabs
+    //Get Tab & Window Details from chrome Browser API
+    let currTabs = await chrome.tabs.query({windowId})
+    // Add time property to currTabs
+    let time = -1
+    currTabs = currTabs.map((tab)=> {
+        if (!openTabsStored[tab.id]) {
+            console.log('Problem - curr Tab missing in storedOpenTabs', tab)
+            const date = new Date()
+            tab.time = date.getTime()
+        }
+        else tab.time = openTabsStored[tab.id].time
+        if (time < tab.time) time = tab.time
+        return tab
+    })
+    return [currTabs, time]
+}
+
+export const replaceOpenWindow = async (windowId, isWindowActive,  replaceEle, replaceByEleViewMode) => {
+    const [updatedWindow, updatedTime] = await getOpenWindow(windowId)
+    const replaceByEle = replaceByEleViewMode === 'E' ? 
+            createExapndWindow(updatedWindow, updatedTime, isWindowActive) :
+            createCollapsedWindow(updatedWindow, updatedTime, isWindowActive)
+    replaceEle.parentElement.insertBefore(replaceByEle, replaceEle)
+    replaceEle.remove()
+
 }
