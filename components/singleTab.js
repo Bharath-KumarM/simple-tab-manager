@@ -91,12 +91,8 @@ export const createSingleTabEle = (tab) =>{
         e.stopPropagation()
         if (isOpenWindow){
             chrome.windows.update(tab.windowId, {focused: true}).then(()=>{
-                if (isOpenTab){
-                    chrome.tabs.update(tab.id, {active: true})
-                }
-                else{
-                    chrome.tabs.create({active: true, url: tab.url, windowId: tab.windowId})
-                }
+                if (isOpenTab) chrome.tabs.update(tab.id, {active: true})
+                else chrome.tabs.create({active: true, url: tab.url, windowId: tab.windowId})
             })
         }
         else {
