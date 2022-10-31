@@ -1,6 +1,7 @@
 import { getAgoTime, getUrlDomin} from "./utilities.js"
 import { createCollapsedTabEle } from "./collapsedWindow.js"
-import { processOpenTabs } from "./processOpenTabs.js"
+import { processOpenTabs, replaceOpenWindow } from "./processOpenTabs.js"
+import { createbottomToastBanner } from "./bottomToastBanner.js"
 
 //Template
 const closeTabCntEle =  document.getElementsByClassName('close tabs-cnt')[0]
@@ -21,7 +22,7 @@ const createNewCloseTabEle = (tab)=>{
 }
 
 export const createSingleTabEle = (tab) =>{
-    
+    //Identify Window and Tab status
     const isOpenWindow = tab.windowId ? true : false
     const isOpenTab = tab.id  ? true : false
 
@@ -47,7 +48,6 @@ export const createSingleTabEle = (tab) =>{
     timeEle.textContent = ' ' + getAgoTime(tab.time)
 
 
-    
     if (tab.audible){
         // Audio Idicator
         const audioDotEle = singleTabEle.querySelector('.audio-dot')
@@ -107,9 +107,21 @@ export const createSingleTabEle = (tab) =>{
         closeTabBtnEle.remove()
     }
     else{ 
+        // Close Tab Btn Click Listeners
         closeTabBtnEle.addEventListener('click', (e)=>{
             e.stopPropagation()
-            chrome.tabs.remove(tab.id)
+            chrome.tabs.remove(tab.id).then(()=>{
+                // Bottom Toast Banner for users
+                createbottomToastBanner('Tab Closed Successfully', ()=>{
+                    chrome.windows.get(tab.windowId).then(()=>{
+                        let index = -1
+                        if (tab.index) index = tab.index
+                        chrome.tabs.create({windowId: tab.windowId, active: true, url: tab.url, index})
+                    }).catch(()=>chrome.tabs.create({active: true, url: tab.url}))
+                })
+            }).catch(()=>{
+                createbottomToastBanner('Tab Close UnSuccessfully! Refresh Once')
+            })
             singleTabEle.remove()
             delete tab.id
             createNewCloseTabEle(tab)
@@ -122,31 +134,19 @@ export const createSingleTabEle = (tab) =>{
 
     if (isOpenTab){
         singleTabEle.addEventListener('dragstart', (e)=>{
-            singleTabEle.classList.add('dragging')
-            let openTabsViewMode = 'E'
-            chrome.storage.local.set({openTabsViewMode})
-            processOpenTabs().then(()=>{
-                const draggingEle = document.querySelector(`[data-tab-id="${tab.id}"]`)
-                //Scroll for element location
-                draggingEle.classList.add('dragging')
-                const offset = 150
-                const bodyRect = document.body.getBoundingClientRect().top
-                const elementRect = draggingEle.parentNode.getBoundingClientRect().top
-                const elementPosition = elementRect - bodyRect;
-                const offsetPosition = elementPosition - offset
-
-                window.scrollTo({
-                top: offsetPosition,
-                behavior: 'smooth'
+            e.preventDefault()
+            // Create Banner and for undo button pass a function to force 'T' view mode 
+            createbottomToastBanner('View Mode Changed to Drag Tabs, Now Drag', ()=>{
+                let openTabsViewMode = 'T'
+                chrome.storage.local.set({openTabsViewMode}).then(()=>{
+                    processOpenTabs()
                 })
-                // draggingEle.addEventListener('dragend', e=>{
-                //     draggingEle.classList.remove('dragging')
-                // })
             })
-        }) 
-        singleTabEle.addEventListener('dragend', (e)=>{
-            document.querySelector('.dragging').classList.remove('dragging')
-            // singleTabEle.classList.remove('dragging')
+            // Drop drag available only to View By Window mode. So, force it
+            let openTabsViewMode = 'E'
+            chrome.storage.local.set({openTabsViewMode}).then(()=>{
+                processOpenTabs()
+            })
         }) 
     }
 
