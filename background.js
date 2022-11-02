@@ -132,6 +132,7 @@ const handleClosedWindow = (windowId) => {
 
     // Put it to closed window local storage
     closedTabsOfClosedWin.push(closedWindow)
+    // To maintain only two closed window
     if (closedTabsOfClosedWin.length > 2){
         closedTabsOfClosedWin = closedTabsOfClosedWin.slice(1)
     }

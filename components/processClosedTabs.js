@@ -1,7 +1,7 @@
 import { createSingleTabEle } from "./singleTab.js"
 import { handleMinMaxBtnClick as modifyMinMaxSortBtns } from "./minMaxSort.js"
 import { createExapndWindow } from "./expandWindow.js"
-import { createCollapsedWindow } from "./collapsedWindow.js"
+import { createCollapsedTabEle, createCollapsedWindow } from "./collapsedWindow.js"
 
 const closeTabCntEle =  document.getElementsByClassName('close tabs-cnt')[0]
 
@@ -59,8 +59,8 @@ export const processClosedTabs = async () =>{
         }
     
         for (const CTofCW of closedTabsOfClosedWin){
-            for (const CTOWtab of CTofCW){
-                allClosedTabs.push(CTOWtab)
+            for (const CTCWtab of CTofCW){
+                allClosedTabs.push(CTCWtab)
             }
         }
         
@@ -147,4 +147,17 @@ export const replaceClosedWindow = async (windowId, isWindowActive, replaceEle, 
             createCollapsedWindow(updatedWindow, time, isWindowActive)
     replaceEle.parentElement.insertBefore(replaceByEle, replaceEle)
     replaceEle.remove()
+}
+export const createNewCloseTabEle = (tab)=>{
+    // closed window element 
+    const closedWindowEle = closeTabCntEle.querySelector(`[data-window-id="${tab.windowId}"]`)
+    if (closedWindowEle && closedWindowEle.dataset.windowType === 'collapsed'){
+        const closedWindowTabCnt = closedWindowEle.querySelector('.win-col-tab-cnt')
+        createCollapsedTabEle(tab, closedWindowTabCnt)
+    }
+    else{
+        const closeTabsInnerCnt = closeTabCntEle.querySelector('.tabs-inner-cnt')
+        const closedTabEle = createSingleTabEle(tab)
+        closeTabsInnerCnt.prepend(closedTabEle)
+    }
 }

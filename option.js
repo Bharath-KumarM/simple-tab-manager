@@ -4,6 +4,10 @@ import { processOpenTabs } from "./components/processOpenTabs.js"
 import "./components/countUserOpen.js" //counts user open and put banner message based on it
 
 
+//Tab Containers
+const openTabCntEle =  document.getElementsByClassName('open tabs-cnt')[0]
+const closeTabCntEle =  document.getElementsByClassName('close tabs-cnt')[0]
+
 
 // By Default view by tab
 // T tab view
@@ -63,7 +67,7 @@ minMaxOpentabsBtn.addEventListener('click', (e)=>{
         processOpenTabs()
     })
 })
-
+//Open Tabs Sort Btn
 const sortByOpenTabBtn = openTabCntEle.querySelector('.open.tabs-cnt .sort-by')
 sortByOpenTabBtn.addEventListener('click', (e)=>{
     e.stopPropagation()

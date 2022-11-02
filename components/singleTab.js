@@ -1,6 +1,6 @@
 import { getAgoTime, getUrlDomin} from "./utilities.js"
 import { createCollapsedTabEle } from "./collapsedWindow.js"
-import { processOpenTabs, replaceOpenWindow } from "./processOpenTabs.js"
+import { processOpenTabs } from "./processOpenTabs.js"
 import { createbottomToastBanner } from "./bottomToastBanner.js"
 
 //Template
@@ -36,7 +36,7 @@ export const createSingleTabEle = (tab) =>{
     if (tab.favIconUrl) favIconEle.setAttribute('src', tab.favIconUrl)
 
     // title
-    const titleEle = singleTabEle.querySelector('.title')
+    const titleEle = singleTabEle.querySelector('.title span')
     titleEle.textContent = tab.title
 
     // url & time
@@ -82,7 +82,8 @@ export const createSingleTabEle = (tab) =>{
             })
             
         })
-        titleEle.prepend(speakerBtnEle)
+        //Title Element
+        singleTabEle.querySelector('.title').prepend(speakerBtnEle)
     }
 
 

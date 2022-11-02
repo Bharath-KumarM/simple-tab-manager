@@ -53,9 +53,10 @@ export const processOpenTabs = async () =>{
         audioVideoTabCntEle.appendChild(audioVideoTabEles)
     }
 
-
+    // Create Single Tabs
+    // view by tab - open tabs (Note: Default Option)
     if (openTabsViewMode === 'T'){
-        // Filter tabs
+        // Filter audio tabs
         const filteredAllTabs = sortedAllTabs.filter((tab, index)=> {
             if (tab.audible) return false
             if (index === 0) return false
@@ -68,7 +69,20 @@ export const processOpenTabs = async () =>{
         }
 
         // view by tab - open tabs (Note: Default Option)
-        let viewByTabEles = createViewByTabsAll(filteredAllTabs)
+        const viewByTabEles = document.createElement('div')
+        viewByTabEles.classList.add('tabs-inner-cnt')
+    
+        for (const index in filteredAllTabs){
+            const tab = filteredAllTabs[index]
+            //Create Sigle tabs
+            const singleTabEle = createSingleTabEle(tab)
+    
+            //Active class is only for first open tab
+            if (tab.id && index == 0){
+                singleTabEle.classList.add('active')
+            }
+            viewByTabEles.appendChild(singleTabEle)
+        }
         openTabCntEle.append(viewByTabEles)
 
     }
@@ -87,11 +101,8 @@ export const processOpenTabs = async () =>{
 
 }
 
-
-
-
 const processCurrTabToWindows = (allTabs, activeWindowId) =>{
-    // create a windows object out of currTabs
+    // create window objects out of currTabs
     const windows = {}
     allTabs.map((tab)=>{
         if (!windows[tab.windowId]) windows[tab.windowId] = []
@@ -105,32 +116,13 @@ const processCurrTabToWindows = (allTabs, activeWindowId) =>{
         //Get Recent time in the window
         let time = -1
         window.forEach(tab => time = Math.max(tab.time,time))
+        //Store recent tab time as object for each window
         winIdsSrtByTime.push({windowId, time})
     }
     winIdsSrtByTime.sort((a,b)=> b.time - a.time)
 
     return [windows, winIdsSrtByTime]
 }
-
-const createViewByTabsAll = (allTabs)=>{
-    const tempTabCntEle = document.createElement('div')
-    tempTabCntEle.classList.add('tabs-inner-cnt')
-
-    for (const index in allTabs){
-        const tab = allTabs[index]
-        //Create Sigle tabs
-        const singleTabEle = createSingleTabEle(tab)
-
-        //Active class is only for first open tab
-        if (tab.id && index == 0){
-            singleTabEle.classList.add('active')
-        }
-        tempTabCntEle.appendChild(singleTabEle)
-    }
-
-    return tempTabCntEle
-}
-
 
 const createaudioVideoTabs = (allTabs) =>{
     const singleTabCntEle = document.createElement('div')
@@ -151,6 +143,7 @@ const getOpenWindow = async (windowId)=>{
     // Add time property to currTabs
     let time = -1
     currTabs = currTabs.map((tab)=> {
+        //Open tab is not stored locally then report and get current time
         if (!openTabsStored[tab.id]) {
             console.log('Problem - curr Tab missing in storedOpenTabs', tab)
             const date = new Date()

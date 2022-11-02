@@ -1,7 +1,9 @@
 import { getAgoTime, getUrlDomin, getRandomColor } from "./utilities.js"
 import { createExapndWindow } from "./expandWindow.js"
 import { replaceClosedWindow } from "./processClosedTabs.js"
-import { replaceOpenWindow } from "./processOpenTabs.js"
+import { processOpenTabs, replaceOpenWindow } from "./processOpenTabs.js"
+import { createbottomToastBanner } from "./bottomToastBanner.js"
+import { createPopupScreen } from "./popupBox.js"
 
 const winCollapseTemplateEle = document.getElementById('win-collapse')
 const tabCollapsedTemplateEle =  winCollapseTemplateEle.content.cloneNode(true).querySelector('.win-col-tab')
@@ -51,6 +53,33 @@ export const createCollapsedTabEle = (tab, parentElement) =>{
         const audioDotEle = newTabEle.querySelector('.audio-dot')
         audioDotEle.classList.add('active')
     }
+
+    //Drag and Drop feature
+    if (isOpenTab){
+        newTabEle.draggable = true
+        //Drag Start by user
+        newTabEle.addEventListener('dragstart', (e)=>{
+            // newTabEle.classList.add('dragging')
+            e.preventDefault()
+            // Create Banner and for undo button pass a function to force 'T' view mode 
+            createbottomToastBanner('View Mode Changed to Drag Tabs, Now Drag', ()=>{
+                let openTabsViewMode = 'T'
+                chrome.storage.local.set({openTabsViewMode}).then(()=>{
+                    processOpenTabs()
+                })
+            })
+            // Drop drag available only to View By Window mode. So, force it
+            let openTabsViewMode = 'E'
+            chrome.storage.local.set({openTabsViewMode}).then(()=>{
+                processOpenTabs()
+            })
+        })
+
+        //DragEnd by user
+        // newTabEle.addEventListener('dragend', e=>{
+        //     newTabEle.classList.remove('dragging')
+        // })
+    }
     parentElement.prepend(newTabEle)
 }
 
@@ -78,36 +107,75 @@ export const createCollapsedWindow = (window, time, isWindowActive)=>{
     //Window Element Click
     const winCollapseTabCntEle = winCollapseEle.querySelector('.win-col-tab-cnt')
     winCollapseEle.addEventListener('click', (e) => {
-
-        if (isOpenWindow){
-            chrome.windows.update(windowId, {focused: true}).then(()=>{
-                if (!isOpenTabs){
-                    window.map((tab)=>{
-                        chrome.tabs.create({active: true, url: tab.url, windowId: tab.windowId})
-                    })
-                }
-            })
-
+        if (isOpenWindow && isOpenTabs){
+            chrome.windows.update(windowId, {focused: true})
+        }
+        else if(isOpenWindow && !isOpenTabs){
+            const handleWindowClick = ()=> {
+                chrome.windows.update(windowId, {focused: true}).then(()=>{
+                   window.map((tab)=>{
+                       chrome.tabs.create({active: true, url: tab.url, windowId: tab.windowId})
+                   })
+               })
+            }
+            if (window.length>1){
+                createPopupScreen(`About to open ${window.length} tabs`, 'Do you want to proceed?',handleWindowClick)
+            }
+            else handleWindowClick()
         }
         else{
-            chrome.windows.create({}, (newWindow)=>{
-                window.map((tab)=> chrome.tabs.create({active: true, 
-                    url: tab.url, 
-                    windowId: newWindow.id,
-                    state: 'fullscreen'}))
-
-            })
+            const handleWindowClick = ()=>{
+                chrome.windows.create({state: 'maximized', 
+                        url: window[0].url, focused: true}, (newWindow)=>{
+                        window.map((tab, index)=> {
+                        if (index === 0) return
+                        chrome.tabs.create({active: true, 
+                        url: tab.url, 
+                        windowId: newWindow.id})
+                    })
+                })
+            }
+            if (window.length>3){
+                createPopupScreen(`About to open ${window.length} tabs`, 'Do you want to proceed?',handleWindowClick)
+            }
+            else{
+                handleWindowClick()
+            }
         }
     })
 
     // Close Btn
     const closeWindowBtnEle = winCollapseEle.querySelector('.close-btn')
     if (isOpenTabs){
-        closeWindowBtnEle.addEventListener('click', e =>{
+        closeWindowBtnEle.addEventListener('click', e =>{   
             e.stopPropagation()
-            chrome.windows.remove(windowId)
-            winCollapseEle.remove()
+            const handleCloseBtnClick = ()=>{
+                chrome.windows.remove(windowId).then(()=>{
+                    createbottomToastBanner('Window Closed Sucessfully',()=>{
+                        chrome.windows.create({state: 'maximized', 
+                                                url: window[0].url, focused: true}, (newWindow)=>{
+                            window.map((tab, index)=> {
+                                if (index === 0) return
+                                chrome.tabs.create({active: true, 
+                                    url: tab.url, 
+                                    windowId: newWindow.id})
+                            })
+            
+                        })
+                    })
+                })
+                winCollapseEle.remove()
+            }
+            if (window.length>3){
+                createPopupScreen(`About to Close ${window.length} tabs`, 'Do you want to proceed?',handleCloseBtnClick)
+            }
+            else{
+
+                handleCloseBtnClick()
+            }
+
         })
+        
     }
     else{
         closeWindowBtnEle.remove()
@@ -142,6 +210,38 @@ export const createCollapsedWindow = (window, time, isWindowActive)=>{
             winCollapseEle.remove()
         }
     })
+    //Drag feature
+    // const getTabAfterDraggingTab = (winCollapseEle, clientXY)=>{
+    //     const [clientX, clientY] = clientXY
+    //     let notDraggingTabEles = [...winCollapseEle.querySelectorAll('.win-col-tab:not(.dragging)')];
+        
+    //     return windowTabEles.reduce((closestTab, nextTab)=>{
+    //         let nextTabRect = nextTab.getBoundingClientRect()
+    //         let offSetX = clientX - nextTabRect.left - (nextTabRect.width/2) 
+    //         // let offSetX = clientX - nextTabRect.right
+
+    //         if ((offSetX < 0 && offSetX > closestTab.offSetX) &&
+    //             (clientY >= nextTabRect.top && clientY <= nextTabRect.bottom)){
+    //             return {offSetX, element: nextTab}
+    //         }
+    //         else return closestTab
+    //     }, {offSetX: Number.NEGATIVE_INFINITY}).element
+    // }
+    // if (isOpenTabs){
+    //     winCollapseTabCntEle.addEventListener('dragover', (e)=>{
+    //         e.preventDefault()
+    //         let draggingTab = document.querySelector('.dragging')
+    //         let tabAfterDraggingTab = getTabAfterDraggingTab(winCollapseEle, [e.clientX, e.clientY])
+    //         if(tabAfterDraggingTab){
+    //             winCollapseTabCntEle.insertBefore(draggingTab, tabAfterDraggingTab);
+
+    //         }
+    //         else{
+    //             winCollapseTabCntEle.appendChild(draggingTab);
+
+    //         }
+    //     })
+    // }
     return winCollapseEle
 }
 
